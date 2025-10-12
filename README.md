@@ -165,4 +165,3 @@ Reprodução permitida mediante citação da autora e referência à disciplina 
 🔗 [Clique aqui para acessar o código no Google Colab](#)  
 🔗 [Repositório GitHub](https://github.com/ingredy3/CEP_1)
 
----
