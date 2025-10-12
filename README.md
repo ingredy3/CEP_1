@@ -2,24 +2,27 @@
 
 ## 🎯 Objetivo do Projeto
 
-Este MVP tem como objetivo **aplicar o Controle Estatístico de Processo (CEP)** em um contexto industrial real, utilizando **cartas de controle de variáveis** (X̄ e R) para monitorar a **estabilidade e variabilidade** de um processo produtivo.  
+Este MVP tem como objetivo **aplicar o Controle Estatístico de Processo (CEP)** em um contexto industrial real, utilizando **cartas de controle de variáveis (X̄ e R)** para monitorar a **estabilidade e a variabilidade** de um processo produtivo.  
 
-A análise foi feita sobre dados reais de manufatura, com variáveis como:
+A análise foi feita sobre dados de um processo de manufatura, considerando variáveis como:
 - **Temperature (°C)**  
 - **Machine Speed (RPM)**  
 - **Vibration Level (mm/s)**  
 - **Energy Consumption (kWh)**  
 
-A variável principal analisada foi **Temperature (°C)**, por estar diretamente relacionada ao desempenho e qualidade do processo produtivo.
+A variável escolhida para o monitoramento foi **Temperature (°C)**, por estar diretamente relacionada ao desempenho e à qualidade do produto final.
 
 ---
 
 ## 🧠 Contexto do Projeto
 
-O **Controle Estatístico de Processo (CEP)** é uma das principais ferramentas da qualidade, introduzida por **Walter Shewhart** e amplamente detalhada por **Montgomery (Capítulos 5 e 6)**.  
-Ele permite distinguir entre **variações comuns (inerentes ao processo)** e **variações especiais (anomalias que exigem ação corretiva)**.
+O **Controle Estatístico de Processo (CEP)** é uma das ferramentas mais importantes da Qualidade, introduzida por **Walter A. Shewhart** e amplamente discutida por **Douglas C. Montgomery** nos capítulos 5 e 6 do livro *Introduction to Statistical Quality Control*.  
 
-Neste estudo, foi implementado o **monitoramento do processo via cartas X̄ e R**, que indicam se o processo está **em controle estatístico**.
+Seu objetivo é distinguir entre:
+- **Variações comuns**, que são naturais do processo;
+- **Variações especiais**, que indicam anomalias e exigem ação corretiva.  
+
+Neste projeto, o CEP foi aplicado para avaliar se o processo se encontra **sob controle estatístico** e para identificar possíveis **causas especiais de variação**.
 
 ---
 
@@ -27,71 +30,80 @@ Neste estudo, foi implementado o **monitoramento do processo via cartas X̄ e R*
 
 ### 📌 Passo 1 – Importação das Bibliotecas e Definição das Constantes
 
-Foram importadas bibliotecas essenciais:
-- `pandas` → manipulação dos dados  
-- `numpy` → cálculos numéricos  
-- `matplotlib` → visualização gráfica  
+Foram importadas as principais bibliotecas:
+- `pandas` → manipulação de dados tabulares;  
+- `numpy` → cálculos matemáticos;  
+- `matplotlib` → criação dos gráficos;  
+- `IPython.display` → exibição de DataFrames no Colab.
 
-Também foram definidas **constantes de controle (d2, D3, D4)** de acordo com **Montgomery (n=20)**, fundamentais para o cálculo dos limites das cartas X̄ e R.
+Também foram definidas as **constantes d2, D3 e D4**, que variam conforme o tamanho do subgrupo (n=20), conforme a tabela de **Montgomery (2013)**.
+
+Essas constantes são usadas para calcular os **limites de controle** das cartas de controle.
 
 ---
 
-### 📌 Passo 2 – Leitura e Tratamento dos Dados
+### 📌 Passo 2 – Leitura e Preparação dos Dados
 
-A base foi carregada diretamente do **GitHub**, contendo dados de produção industrial.  
-Etapas:
-- Conversão da coluna `Timestamp` para formato de data e hora  
-- Seleção da variável `Temperature (°C)`  
-- Agrupamento dos dados em **subgrupos racionais de tamanho n=20**  
-- Cálculo da **média (X̄)** e **amplitude (R)** de cada subgrupo  
+Os dados foram carregados diretamente do GitHub, contendo registros temporais do processo de manufatura.  
+Etapas realizadas:
+1. Conversão da coluna `Timestamp` para formato de data e hora;  
+2. Seleção da variável de interesse `Temperature (°C)`;  
+3. Limpeza dos dados, removendo valores nulos;  
+4. Formação de **subgrupos racionais** de tamanho `n=20`;  
+5. Cálculo da **média (X̄)** e da **amplitude (R)** de cada subgrupo.
 
-Esse agrupamento permite reduzir a variabilidade aleatória e identificar padrões de instabilidade.
+O uso de subgrupos racionais segue o conceito apresentado por **Montgomery (Cap. 5)**, permitindo reduzir a influência de variações aleatórias.
 
 ---
 
 ### 📌 Passo 3 – Cálculo dos Limites Iniciais e Diagnóstico (Fase 1)
 
-Com os subgrupos formados, foram calculados os limites iniciais:
+Nesta etapa, foram calculados os limites de controle iniciais com base em **todas as observações**:
 
 - **Carta X̄ (Médias):**  
   \[
-  UCL_X = \bar{\bar{X}} + 3 \frac{\sigma_{\hat}}{\sqrt{n}}, \quad LCL_X = \bar{\bar{X}} - 3 \frac{\sigma_{\hat}}{\sqrt{n}}
+  UCL_X = \bar{\bar{X}} + 3 \frac{\sigma_{\hat}}{\sqrt{n}} \quad e \quad LCL_X = \bar{\bar{X}} - 3 \frac{\sigma_{\hat}}{\sqrt{n}}
   \]
-
 - **Carta R (Amplitudes):**  
   \[
-  UCL_R = D_4 \bar{R}, \quad LCL_R = D_3 \bar{R}
+  UCL_R = D_4 \bar{R} \quad e \quad LCL_R = D_3 \bar{R}
   \]
 
-Nesta etapa, foram identificados **subgrupos fora dos limites**, sinalizando **instabilidade no processo (causas especiais)**.
+Em seguida, foram identificados **subgrupos fora de controle**, ou seja, pontos acima ou abaixo dos limites calculados.  
+Esses pontos indicam **instabilidade do processo** e a presença de **causas especiais**.
 
 ---
 
 ### 📌 Passo 4 – Intervenção e Recalibração dos Limites (Fase 2)
 
-Após identificar os subgrupos instáveis na carta R, eles foram **removidos** para recalcular o **potencial do processo**.
+Após a detecção de subgrupos fora de controle na **Carta R**, eles foram **removidos** para recalcular os limites de controle.  
+Esse processo é chamado de **recalibração** e busca representar o **potencial do processo sob controle estatístico**.
 
-O objetivo dessa etapa é estimar **limites mais realistas**, representando o **processo sob controle estatístico**.
+Novos limites foram obtidos:
+- Menores amplitudes (R) → indicam **menor variabilidade**;  
+- Médias mais consistentes → indicam **maior estabilidade**.
 
-Novos limites foram obtidos e aplicados em todas as observações, mostrando **redução da variabilidade e estabilidade** nas médias.
+Com isso, foi possível distinguir entre as **causas especiais eliminadas** e as **variações naturais restantes**.
 
 ---
 
-### 📌 Passo 5 – Visualização Completa e Foco nos Últimos Subgrupos
+### 📌 Passo 5 – Visualizações e Interpretação dos Resultados
 
 Foram geradas duas visualizações principais:
 
 1. **Carta X̄ e R completa:**  
-   Mostra a evolução de todos os subgrupos, destacando pontos fora de controle e limites ajustados.  
-   📈 `carta_XR_n20_completa.png`
+   Mostra todos os subgrupos analisados, com os pontos fora de controle destacados.  
+   📈 Arquivo: `carta_XR_n20_completa.png`
 
-2. **Carta com foco nos últimos 100 subgrupos:**  
-   Permite analisar a estabilidade recente do processo.  
-   📊 `carta_XR_n20_otimizada.png`
+2. **Carta X̄ e R focada nos últimos 100 subgrupos:**  
+   Destaca o comportamento recente do processo e permite monitorar o desempenho mais atual.  
+   📊 Arquivo: `carta_XR_n20_otimizada.png`
+
+Ambas as cartas demonstram a transição de um processo **instável** (Fase 1) para um **processo estável** (Fase 2).
 
 ---
 
-## 📊 Resultados
+## 📊 Resultados Obtidos
 
 | Indicador | Valor Inicial | Valor Após Correção |
 |------------|----------------|---------------------|
@@ -101,46 +113,47 @@ Foram geradas duas visualizações principais:
 | **UCL_X / LCL_X** | 76.3367 / 73.6421 | 76.3333 / 73.6455 |
 | **UCL_R / LCL_R** | 11.7469 / 3.0757 | 11.7171 / 3.0679 |
 
-✅ **Conclusão:**  
-Após a remoção dos subgrupos fora de controle, o processo mostrou **estabilidade estatística**.  
-As variações observadas são **naturais e controladas**, sem sinais de causas especiais ativas.
+✅ **Conclusão Parcial:**  
+Após a remoção dos subgrupos instáveis, o processo passou a apresentar **menor dispersão** e **controle estatístico consolidado**.
 
 ---
 
-## 🧩 Ferramentas e Tecnologias Utilizadas
+## 🧩 Ferramentas Utilizadas
 
-| Ferramenta | Função Principal |
-|-------------|------------------|
-| **Python 3.10+** | Linguagem principal |
-| **Google Colab** | Ambiente de execução |
-| **Pandas / NumPy** | Manipulação e análise de dados |
-| **Matplotlib** | Visualização e plotagem das cartas |
+| Ferramenta | Função |
+|-------------|--------|
+| **Python 3.10+** | Linguagem principal de análise |
+| **Google Colab** | Ambiente de execução e visualização |
+| **Pandas / NumPy** | Manipulação e análise numérica dos dados |
+| **Matplotlib** | Criação das cartas de controle |
 | **GitHub** | Armazenamento e versionamento do projeto |
 
 ---
 
 ## 📘 Fundamentação Teórica
 
-O trabalho se baseia no livro:
+Este trabalho foi fundamentado nos capítulos **5 e 6** do livro:
 
-**MONTGOMERY, D. C.** *Introduction to Statistical Quality Control*, 7ª Edição, John Wiley & Sons, 2013.  
-Capítulos 5 e 6 — *Control Charts for Variables* e *Process Capability Analysis.*
+**MONTGOMERY, D. C.** *Introduction to Statistical Quality Control.*  
+7ª edição. John Wiley & Sons, 2013.
 
-Esses capítulos explicam:
-- Como construir e interpretar as cartas X̄ e R.  
-- O conceito de **limites de controle** e **amostras racionais**.  
-- A distinção entre **causas comuns** e **causas especiais de variação**.
+Esses capítulos abordam:
+- A construção e interpretação das cartas **X̄** e **R**;  
+- A importância do **tamanho do subgrupo (n)**;  
+- O conceito de **limites de controle** e **causas de variação**;  
+- O uso das cartas para **avaliar a estabilidade e capacidade do processo**.
 
 ---
 
 ## 🧠 Conclusão Geral
 
-O processo analisado demonstra:
-- **Estabilidade estatística** após a remoção de causas especiais.  
-- **Controle adequado da variabilidade** (Carta R estável).  
-- **Médias consistentes** próximas ao valor central do processo.  
+O processo analisado apresentou:
+- **Estabilidade estatística** após a intervenção;  
+- **Variabilidade sob controle (Carta R)**;  
+- **Médias consistentes (Carta X̄)**.
 
-Portanto, o processo está **sob controle estatístico**, apresentando **desempenho previsível** e **baixo risco de não conformidades**.
+Conclui-se que o processo está **sob controle estatístico**, com variações compatíveis com o comportamento natural do sistema produtivo.  
+Portanto, ele é **previsível, confiável e com boa capacidade de manutenção da qualidade.**
 
 ---
 
@@ -149,19 +162,19 @@ Portanto, o processo está **sob controle estatístico**, apresentando **desempe
 **Ingredy Thamis**  
 📚 MVP — Controle Estatístico de Processo (CEP)  
 📅 Outubro / 2025  
-🏫 Universidade [coloque o nome da sua instituição]
+🏫 Universidade [coloque o nome da instituição]
 
 ---
 
 ## 📜 Licença
 
-Uso acadêmico e educativo.  
-Reprodução permitida mediante citação da autora e referência à disciplina de CEP.
+Uso acadêmico e educacional.  
+Reprodução permitida mediante citação da autora e referência à disciplina de Controle Estatístico de Processo (CEP).
 
 ---
 
-## 🌐 Repositório do Projeto
+## 🌐 Repositório
 
-🔗 [Clique aqui para acessar o código no Google Colab](#)  
-🔗 [Repositório GitHub](https://github.com/ingredy3/CEP_1)
+🔗 [Google Colab - Notebook do Projeto](#)  
+🔗 [GitHub - Repositório do Código](https://github.com/ingredy3/CEP_1)
 
