@@ -162,19 +162,8 @@ Portanto, ele é **previsível, confiável e com boa capacidade de manutenção 
 **Ingredy Thamis**  
 📚 MVP — Controle Estatístico de Processo (CEP)  
 📅 Outubro / 2025  
-🏫 Universidade [coloque o nome da instituição]
+🏫 Universidade de Brasilia
 
 ---
 
-## 📜 Licença
-
-Uso acadêmico e educacional.  
-Reprodução permitida mediante citação da autora e referência à disciplina de Controle Estatístico de Processo (CEP).
-
----
-
-## 🌐 Repositório
-
-🔗 [Google Colab - Notebook do Projeto](#)  
-🔗 [GitHub - Repositório do Código](https://github.com/ingredy3/CEP_1)
 
